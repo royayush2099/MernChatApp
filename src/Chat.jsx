@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Avatar from './Avatar'
 
 const Chat = () => {
     const [ws,setWs] = useState(null)//storing the state
@@ -37,8 +38,10 @@ function handleMessage(ev){
 
         Chxt</div>
       {Object.keys(onlinePeople).map(userId =>(
-        <div className='border-b border-gray-100 py-2'> 
-            {onlinePeople[userId]}
+        <div className='border-b border-gray-100 py-2 flex items-center gap-2 cursor-pointer'> 
+       <Avatar username={onlinePeople[userId]} userId={userId}/>
+       <span className='text-grey-800'>  {onlinePeople[userId]}</span>
+           
             </div>
       ))}
       </div>
