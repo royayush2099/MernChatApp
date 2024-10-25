@@ -46,13 +46,13 @@ const Chat = () => {
     // Check if the message contains online user info
     if ('online' in messageData) {
       showOnlinePeople(messageData.online);
-    }else{
-     setMessages(prev=>([...prev,{isOur:false,text:messageData.text}]));
+    }else if('text' in messageData){
+     setMessages(prev=>([...prev,{...messageData}]));
     }
   }
 //function to send message
   function sendMessage(ev){
-    console.log('sending')
+   
 ev.preventDefault(ev);
 ws.send(JSON.stringify({
  
@@ -61,7 +61,12 @@ ws.send(JSON.stringify({
   }
 ));
 setNewMessageText('')
-setMessages(prev => ([...prev,{text:newMessageText, isOur:true}]))
+setMessages(prev => ([...prev,{
+  text:newMessageText,
+   sender:id,
+   recepient:selectedUserId,
+  
+  }]))
   }
 
   // Exclude the current user from the list of online people
@@ -102,9 +107,13 @@ setMessages(prev => ([...prev,{text:newMessageText, isOur:true}]))
           </div>
         )}
         {!!selectedUserId && (
-          <div>{/**to pritn all the messages */}
+          <div className='overflow-scroll'>{/**to pritn all the messages */}
             {messages.map(message =>(
-              <div> {message.text}</div>
+              <div className={(message.sender === id ? 'text-right': 'text-left')}>
+  <div className={'text-left inline-block p-2 my-2 rounded-sm text-sm '+(message.sender === id ? 'bg-blue-500 text-white': 'bg-white text-gray-500')}> 
+               sender:{message.sender}<br/>
+               my id:{id}<br/>
+               {message.text}</div> </div>
             ))}
           </div>
         )}
