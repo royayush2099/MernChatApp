@@ -42,11 +42,12 @@ const Chat = () => {
   // Function to handle incoming WebSocket messages
   function handleMessage(ev) {
     const messageData = JSON.parse(ev.data);
+    console.log({ev})
     // Check if the message contains online user info
     if ('online' in messageData) {
       showOnlinePeople(messageData.online);
     }else{
-      console.log({messageData})
+     setMessages(prev=>([...prev,{isOur:false,text:messageData.text}]));
     }
   }
 //function to send message
@@ -60,7 +61,7 @@ ws.send(JSON.stringify({
   }
 ));
 setNewMessageText('')
-setMessages(prev => ([...prev,{text:newMessageText}]))
+setMessages(prev => ([...prev,{text:newMessageText, isOur:true}]))
   }
 
   // Exclude the current user from the list of online people
@@ -99,7 +100,15 @@ setMessages(prev => ([...prev,{text:newMessageText}]))
          &larr; Select a person from sidebar
           </div>
           </div>
-        )}</div>
+        )}
+        {!!selectedUserId && (
+          <div>{/**to pritn all the messages */}
+            {messages.map(message =>(
+              <div> {message.text}</div>
+            ))}
+          </div>
+        )}
+        </div>
 {/*logic to not see the send message form if we haven't selected the user still  */}
 {!!selectedUserId && (
  <form className='flex gap-2' onSubmit={sendMessage}>
