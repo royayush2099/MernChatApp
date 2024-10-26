@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Avatar from './Avatar';
 import Logo from './Logo';
 import { UserContext } from './UserContext';
+import axios from 'axios';
 
 const Chat = () => {
   // State to store WebSocket connection
@@ -15,6 +16,7 @@ const Chat = () => {
   //state for storing messages
   const [messages,setMessages] = useState([]);
   const { username, id } = useContext(UserContext);
+  const divUnderMessages = useRef();
 
   useEffect(() => {
     // Establish WebSocket connection
@@ -65,9 +67,25 @@ setMessages(prev => ([...prev,{
   text:newMessageText,
    sender:id,
    recepient:selectedUserId,
+   id:Date.now(),
   
   }]))
   }
+  useEffect(()=>{
+    const div =  divUnderMessages.current;
+    if(div){
+      div.scrollIntoView({behavior:'smooth',block:'end'});//this useeffect is used to slide the mssg section down 
+    }
+
+  },[messages])
+
+  useEffect(()=>{
+if(selectedUserId){
+  axios.get('/messages/'+selectedUserId)
+}
+  },[selectedUserId])
+
+
 
   // Exclude the current user from the list of online people
   const onlinePeopleExclOurUser = { ...onlinePeople };
@@ -107,15 +125,21 @@ setMessages(prev => ([...prev,{
           </div>
         )}
         {!!selectedUserId && (
-          <div className='overflow-scroll'>{/**to pritn all the messages */}
+          
+ <div className='relative h-full '>
+     <div className='overflow-y-scroll absolute top-0 left-0 right-0 bottom-2'>{/**to pritn all the messages */}
             {messages.map(message =>(
               <div className={(message.sender === id ? 'text-right': 'text-left')}>
-  <div className={'text-left inline-block p-2 my-2 rounded-sm text-sm '+(message.sender === id ? 'bg-blue-500 text-white': 'bg-white text-gray-500')}> 
+  <div className={'text-left inline-block p-2 my-2 rounded-md text-sm '+(message.sender === id ? 'bg-blue-500 text-white': 'bg-white text-gray-500')}> 
                sender:{message.sender}<br/>
                my id:{id}<br/>
                {message.text}</div> </div>
             ))}
-          </div>
+            <div  ref={divUnderMessages}> </div>
+          </div> 
+           </div>
+        
+     
         )}
         </div>
 {/*logic to not see the send message form if we haven't selected the user still  */}
