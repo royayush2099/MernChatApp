@@ -5,7 +5,7 @@ import Routes from "./Routes";
 
 
 function App() {
-axios.defaults.baseURL= 'http://localhost:4000';
+axios.defaults.baseURL= 'https://chxt-backend.onrender.com';
 axios.defaults.withCredentials = true;
 
 
